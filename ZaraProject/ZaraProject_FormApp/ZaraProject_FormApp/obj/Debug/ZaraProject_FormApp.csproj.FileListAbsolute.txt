@@ -1,0 +1,10 @@
+E:\ZaraProject\ZaraProject_FormApp\ZaraProject_FormApp\bin\Debug\ZaraProject_FormApp.exe.config
+E:\ZaraProject\ZaraProject_FormApp\ZaraProject_FormApp\bin\Debug\ZaraProject_FormApp.exe
+E:\ZaraProject\ZaraProject_FormApp\ZaraProject_FormApp\bin\Debug\ZaraProject_FormApp.pdb
+E:\ZaraProject\ZaraProject_FormApp\ZaraProject_FormApp\obj\Debug\ZaraProject_FormApp.csprojAssemblyReference.cache
+E:\ZaraProject\ZaraProject_FormApp\ZaraProject_FormApp\obj\Debug\ZaraProject_FormApp.Form1.resources
+E:\ZaraProject\ZaraProject_FormApp\ZaraProject_FormApp\obj\Debug\ZaraProject_FormApp.Properties.Resources.resources
+E:\ZaraProject\ZaraProject_FormApp\ZaraProject_FormApp\obj\Debug\ZaraProject_FormApp.csproj.GenerateResource.cache
+E:\ZaraProject\ZaraProject_FormApp\ZaraProject_FormApp\obj\Debug\ZaraProject_FormApp.csproj.CoreCompileInputs.cache
+E:\ZaraProject\ZaraProject_FormApp\ZaraProject_FormApp\obj\Debug\ZaraProject_FormApp.exe
+E:\ZaraProject\ZaraProject_FormApp\ZaraProject_FormApp\obj\Debug\ZaraProject_FormApp.pdb
