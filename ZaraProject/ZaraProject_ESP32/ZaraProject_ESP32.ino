@@ -7,14 +7,11 @@
 #define LUX_CALC_SCALAR 12518931
 #define LUX_CALC_EXPONENT -2.15
 
+void ChangeLightStateWithVoiceByHandOrFromSensor(String _command);
+void ChangeFanStateWithVoiceByHandOrFromSensor(String _command);
 
 void ChangeBlindsPosWithVoiceOrFromSensor(String _command);
-void ChangeFanStateWithVoice(String _command);
-void ChangeLightStateWithVoice(String _command);
-
 void ChangeBlindsPosByHand(String _command);
-void ChangeFanStateByHandOrFromSensor(String _command);
-void ChangeLightStateByHandOrFromSensor(String _command);
 
 Servo myServo;
 int pos = 0; // Servo position
@@ -25,26 +22,19 @@ String sensorValuesToSend;
 // ------------------------ Pin Setups ------------------------
 // Light level sensor
 int lsValue = 0;
-int lsPin = A7;
+int lsPin = A7; // D35
 float resistorVoltage = 0.0;
 float ldrVoltage = 0.0;
 float ldrResistance = 0.0;
 float lux = 0.0;
 
-// Humidity sensor
-//int hsValue = 0;
-//int hsPin = A6;
-
 // Gas detection sensor
-//int gsValue = 0;
-//int gsPin = A5;
+int gsValue = 0;
+int gsPin = A6; // D34
 
 // Relays
-//int r1 = 22;
-//int r2 = 22;
-int r3 = 12;
-//int r4 = 8;
-int bLed = 2;
+int r1 = 2; // D2
+int r3 = 12; // D12
 
 // ------------------------ Tasks ------------------------
 // Task 1 - voice commands
@@ -58,22 +48,17 @@ unsigned long time_now2 = 0;
 BluetoothSerial SerialBT;
 
 void setup() {
-  Serial.begin(9600);  
+  Serial.begin(115200);  
   SerialBT.begin("ESP32test"); // Bluetooth name
 
-  myServo.attach(13);    // Servo motor
+  myServo.attach(13);    // Servo motor D13
   pinMode(lsPin, INPUT); // Light level sensor
-  //pinMode(hsPin, INPUT); // Humidity sensor
-  //pinMode(gsPin, INPUT); // Gas detection sensor
+  pinMode(gsPin, INPUT); // Gas detection sensor
 
-  //pinMode(r1, OUTPUT); // Relay 1
-  //digitalWrite(r1, HIGH);
-  //pinMode(r2, OUTPUT); // Relay 2  
+  pinMode(r1, OUTPUT); // Relay 1
+  digitalWrite(r1, HIGH); 
   pinMode(r3, OUTPUT); // Relay 3
   digitalWrite(r3, HIGH);
-  //pinMode(r4, OUTPUT); // Relay 4
-  pinMode(bLed, OUTPUT);
-  digitalWrite(bLed, LOW);
 }
 
 void loop() {
@@ -88,11 +73,8 @@ void loop() {
       ChangeBlindsPosWithVoiceOrFromSensor(command);
       ChangeBlindsPosByHand(command);
 
-      ChangeFanStateWithVoice(command);
-      ChangeFanStateByHandOrFromSensor(command);
-
-      ChangeLightStateWithVoice(command);
-      ChangeLightStateByHandOrFromSensor(command);
+      ChangeFanStateWithVoiceByHandOrFromSensor(command);
+      ChangeLightStateWithVoiceByHandOrFromSensor(command);
     }
   }
 
@@ -101,6 +83,7 @@ void loop() {
     time_now2 = millis();
 
     lsValue = analogRead(lsPin);
+    gsValue = analogRead(gsPin);
 
     resistorVoltage = (float)lsValue / (MAX_ADC_READING * ADC_REF_VOLTAGE);
     ldrVoltage = ADC_REF_VOLTAGE - resistorVoltage;
@@ -109,9 +92,7 @@ void loop() {
 
     sensorValuesToSend += String(lux);
     sensorValuesToSend += "/";
-    sensorValuesToSend += String(0);
-    sensorValuesToSend += "/";
-    sensorValuesToSend += String(0);
+    sensorValuesToSend += String(gsValue);
 
     Serial.println(sensorValuesToSend);
     SerialBT.print(sensorValuesToSend);
@@ -188,7 +169,7 @@ void ChangeBlindsPosByHand(String _command) {
 }
 
 // Fan ---------------------------------------------
-void ChangeFanStateWithVoice(String _command) {
+void ChangeFanStateWithVoiceByHandOrFromSensor(String _command) {
   if(_command.indexOf("turnonfan") != -1) {
     digitalWrite(r3, LOW);
   }
@@ -197,30 +178,12 @@ void ChangeFanStateWithVoice(String _command) {
   }
 }
 
-void ChangeFanStateByHandOrFromSensor(String _command) {
-  if(_command.indexOf("fanhon") != -1) {
-    digitalWrite(r3, LOW);
-  }
-  else if(_command.indexOf("fanhoff") != -1) {
-    digitalWrite(r3, HIGH);
-  }
-}
-
 // Light ---------------------------------------------
-void ChangeLightStateWithVoice(String _command) {
+void ChangeLightStateWithVoiceByHandOrFromSensor(String _command) {
   if(_command.indexOf("turnonlight") != -1) {
-    digitalWrite(bLed, HIGH);
+    digitalWrite(r1, LOW);
   }
   else if(_command.indexOf("turnofflight") != -1) {
-    digitalWrite(bLed, LOW);
-  }
-}
-
-void ChangeLightStateByHandOrFromSensor(String _command) {
-  if(_command.indexOf("tonlmp") != -1) {
-    digitalWrite(bLed, HIGH);
-  }
-  else if(_command.indexOf("tofflmp") != -1) {
-    digitalWrite(bLed, LOW);
+    digitalWrite(r1, HIGH);
   }
 }

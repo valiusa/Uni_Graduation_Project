@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Waiting for command..."
+        android:textSize="20sp"
+        android:textColor="#000"/>
+
+    <ImageButton
+        android:id="@+id/voiceBtn"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_mic"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
+
+    <TextView
+        android:id="@+id/bluetoothStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100px"
+        android:textColor="#000"/>
+
+    <Button
+        android:id="@+id/btnBTOn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200px"
+        android:text="Bluetooth ON" />
+
+    <Button
+        android:id="@+id/btnBTOff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="310px"
+        android:text="Bluetooth OFF" />
+
+    <Button
+        android:id="@+id/btnPairedDevices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="420px"
+        android:text="Show Paired Devices" />
+
+    <Button
+        android:id="@+id/btnDiscoverDevices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="530px"
+        android:text="Discover New Devices" />
+
+    <ListView
+        android:id="@+id/devList"
+        android:layout_width="match_parent"
+        android:layout_height="600px"
+        android:layout_marginTop="740px"/>
+
+    <TextView
+        android:id="@+id/buffer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100px"
+        android:textColor="#000"/>
+</RelativeLayout>

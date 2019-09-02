@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
-using System.Speech;
 using System.Speech.Recognition;
 using System.IO;
 
@@ -21,8 +16,9 @@ namespace ZaraProject_FormApp
         private SpeechRecognitionEngine engine;
         private string path = Path.GetDirectoryName(Application.ExecutablePath);
         private byte count = 0;
-        private string[] sensorsData = new string[4];
-        private double sensorValue = 0.00;
+        private string[] sensorsData = new string[2];
+        private double lightSensorValue = 0.00;
+        private int gasSensorValue = 0;
         private bool zaraOnOFF = false;
         private string zaraOnOffCommand = "";
         private bool sensorControlState = false;
@@ -73,7 +69,7 @@ namespace ZaraProject_FormApp
                 myPort = new SerialPort();
 
                 myPort.PortName = comboBox1.Items[comboBox1.SelectedIndex].ToString();
-                myPort.BaudRate = 9600;
+                myPort.BaudRate = 115200;
                 myPort.Open();
 
                 btnConn.Enabled = false;
@@ -271,7 +267,7 @@ namespace ZaraProject_FormApp
             btnFanON.Enabled = false;
             btnFanOFF.Enabled = true;
 
-            myPort.Write("fanhon");
+            myPort.Write("turnonfan");
         }
 
         private void btnFanOFF_Click(object sender, EventArgs e)
@@ -282,7 +278,7 @@ namespace ZaraProject_FormApp
             btnFanON.Enabled = true; ;
             btnFanOFF.Enabled = false;
 
-            myPort.Write("fanhoff");
+            myPort.Write("turnofffan");
         }
 
         private void timerFan_Tick(object sender, EventArgs e)
@@ -342,60 +338,65 @@ namespace ZaraProject_FormApp
 
         private void CheckSensorsDataLenght(string[] _sensorsData)
         {
-            if (_sensorsData.Length > 2)
+            if (_sensorsData.Length == 2)
             {
-                GetLightLevelData(_sensorsData);
-                GetHumidityData(_sensorsData);
-                GetGasLevelData(_sensorsData);
-            }
-        }
-        // TODO:
-        private void GetGasLevelData(string[] _sensorsData)
-        {
-            if (double.TryParse(_sensorsData[2], out sensorValue))
-            {
-                richTextSensorValue.Text += "Gas Level --> " + sensorValue + Environment.NewLine;
+                GetLightLevelDataAndSetLightAndBlinds(_sensorsData);
+                GetGasLevelDataAndSetFanState(_sensorsData);
             }
         }
 
-        private void GetHumidityData(string[] _sensorsData)
+        private void GetGasLevelDataAndSetFanState(string[] _sensorsData)
         {
-            if (double.TryParse(_sensorsData[1], out sensorValue))
+            if (int.TryParse(_sensorsData[1], out gasSensorValue))
             {
-                richTextSensorValue.Text += "Humidity --> " + sensorValue + Environment.NewLine;
+                if (gasSensorValue > 1000)
+                {
+                    relay_3_panel.BackColor = Color.Green;                    
+                    timerFan.Enabled = true;
+
+                    myPort.Write("turnonfan");
+                }
+                else
+                {                    
+                    relay_3_panel.BackColor = Color.Red;                    
+                    timerFan.Enabled = false;
+
+                    myPort.Write("turnofffan");
+                }
+                richTextSensorValue.Text += "Gas Level --> " + gasSensorValue + Environment.NewLine;
             }
         }
         // -------------------------------------------------------
-        private void GetLightLevelData(string[] _sensorsData)
+        private void GetLightLevelDataAndSetLightAndBlinds(string[] _sensorsData)
         {
-            if (double.TryParse(_sensorsData[0], out sensorValue))
+            if (double.TryParse(_sensorsData[0], out lightSensorValue))
             {
-                if (sensorValue < 100.00)
+                if (lightSensorValue < 100.00)
                 {
                     pictureBoxLamp.Image = Image.FromFile($"{path}/IMG/LampON.png");
                     relay_1_panel.BackColor = Color.Green;
 
-                    myPort.Write("tonlmp");
+                    myPort.Write("turnonlight");
                 }
-                if (sensorValue > 100)
+                if (lightSensorValue > 100)
                 {
                     pictureBoxLamp.Image = Image.FromFile($"{path}/IMG/LampOFF.png");
                     relay_1_panel.BackColor = Color.Red;
 
-                    myPort.Write("tofflmp");
+                    myPort.Write("turnofflight");
                 }
-                if (sensorValue >= 500)
+                if (lightSensorValue > 500)
                 {
                     myPort.Write("raiseblinds");
                     pictureBoxBlinds.Image = Image.FromFile($"{path}/IMG/Blinds_180.png");
                 }
-                if (sensorValue < 500)
+                if (lightSensorValue < 500)
                 {
                     myPort.Write("lowerblinds");
                     pictureBoxBlinds.Image = Image.FromFile($"{path}/IMG/Blinds_0.png");
                 }
 
-                richTextSensorValue.Text += "Light Level --> " + sensorValue + Environment.NewLine;
+                richTextSensorValue.Text += "Light Level --> " + lightSensorValue + Environment.NewLine;
             }
         }
 
@@ -407,7 +408,7 @@ namespace ZaraProject_FormApp
             btnLampOFF.Enabled = true;
 
             relay_1_panel.BackColor = Color.Green;
-            myPort.Write("tonlmp");
+            myPort.Write("turnonlight");
         }
 
         private void btnLampOFF_Click(object sender, EventArgs e)
@@ -418,7 +419,7 @@ namespace ZaraProject_FormApp
             btnLampOFF.Enabled = false;
 
             relay_1_panel.BackColor = Color.Red;
-            myPort.Write("tofflmp");
+            myPort.Write("turnofflight");
         }
 
         private void zara_Tick(object sender, EventArgs e)
